@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.java_lms_group_01.Controller.ResultController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <children>
+
+        <VBox alignment="CENTER" spacing="20"
+              AnchorPane.topAnchor="60.0"
+              AnchorPane.leftAnchor="150.0"
+              AnchorPane.rightAnchor="150.0">
+
+            <Label text="Result Page"
+                   style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+            <Label text="BMI:"/>
+            <Label fx:id="bmiLabel"
+                   style="-fx-font-size:18px;" />
+
+            <Label text="Status:"/>
+            <Label fx:id="statusLabel"
+                   style="-fx-font-size:18px;" />
+
+            <Button fx:id="backBtn"
+                    text="Back"
+                    prefWidth="120"/>
+
+        </VBox>
+
+    </children>
+
+</AnchorPane>

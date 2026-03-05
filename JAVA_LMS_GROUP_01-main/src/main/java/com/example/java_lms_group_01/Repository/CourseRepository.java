@@ -1,6 +1,5 @@
 package com.example.java_lms_group_01.Repository;
 
-import com.example.java_lms_group_01.model.Course;
 import com.example.java_lms_group_01.util.DBConnection;
 
 import java.sql.Connection;
