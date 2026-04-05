@@ -1,5 +1,10 @@
 package com.example.java_lms_group_01.Controller;
 
+<<<<<<< HEAD
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
+=======
 import com.example.java_lms_group_01.model.users.UserRole;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+>>>>>>> 2115b92ecbf8c6e0b1f174d9f4a8815be2906825
 
 public class LoginController {
 
@@ -27,6 +33,25 @@ public class LoginController {
     private PasswordField loginPass;
 
     @FXML
+<<<<<<< HEAD
+    public void initialize() {
+        System.out.println("Login Loaded");
+    }
+
+    @FXML
+    private void btnOnActionLogin() {
+
+        String username = loginEmail.getText();
+        String password = loginPass.getText();
+
+        if (username.equals("admin") && password.equals("1234")) {
+            System.out.println("Login Success");
+        } else {
+            System.out.println("Invalid Login");
+        }
+    }
+}
+=======
     void btnOnActionLogin(ActionEvent event) {
         String registrationNo = loginEmail.getText() == null ? "" : loginEmail.getText().trim();
         String password = loginPass.getText() == null ? "" : loginPass.getText().trim();
@@ -133,3 +158,4 @@ public class LoginController {
         alert.showAndWait();
     }
 }
+>>>>>>> 2115b92ecbf8c6e0b1f174d9f4a8815be2906825
