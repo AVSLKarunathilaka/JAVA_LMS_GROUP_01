@@ -20,6 +20,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Main dashboard for technical officers.
+ * It shows summary information and loads working pages into the content area.
+ */
 public class TechnicalOfficerDashboardController {
 
     @FXML
@@ -133,6 +137,7 @@ public class TechnicalOfficerDashboardController {
         }
     }
 
+    // Load one technical officer sub page into the dashboard content area.
     private void loadContent(String fxmlPath) {
         try {
             Parent view = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -152,7 +157,8 @@ public class TechnicalOfficerDashboardController {
 
     private void loadOfficerDetails(String registrationNo) {
         try {
-            var profile = userProfileRepository.findTechnicalOfficerProfile(registrationNo);
+            com.example.java_lms_group_01.model.UserManagementRow profile =
+                    userProfileRepository.findTechnicalOfficerProfile(registrationNo);
             if (profile == null) {
                 return;
             }

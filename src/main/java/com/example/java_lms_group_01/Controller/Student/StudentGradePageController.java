@@ -2,7 +2,6 @@ package com.example.java_lms_group_01.Controller.Student;
 
 import com.example.java_lms_group_01.Repository.StudentRepository;
 import com.example.java_lms_group_01.model.Grade;
-import com.example.java_lms_group_01.util.GradeScaleUtil;
 import com.example.java_lms_group_01.util.StudentContext;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,7 +10,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Shows published grades plus GPA and SGPA for the logged-in student.
+ */
 public class StudentGradePageController {
 
     @FXML
@@ -44,18 +48,19 @@ public class StudentGradePageController {
         }
 
         try {
-            var summary = studentRepository.findGradeSummary(regNo);
-            var rows = summary.grades().stream()
-                    .map(r -> new Grade(
-                            r.courseCode(),
-                            r.courseName(),
-                            "",
-                            r.grade()
-                    ))
-                    .toList();
+            StudentRepository.GradeSummary summary = studentRepository.findGradeSummary(regNo);
+            List<Grade> rows = new ArrayList<>();
+            for (StudentRepository.GradeRecord record : summary.getGrades()) {
+                rows.add(new Grade(
+                        record.getCourseCode(),
+                        record.getCourseName(),
+                        "",
+                        record.getGrade()
+                ));
+            }
             tblGrades.getItems().setAll(rows);
-            lblGpa.setText("GPA (without English) : " + String.format("%.2f", summary.gpa()));
-            lblSgpa.setText("SGPA (with English) : " + String.format("%.2f", summary.sgpa()));
+            lblGpa.setText("GPA (without English) : " + String.format("%.2f", summary.getGpa()));
+            lblSgpa.setText("SGPA (with English) : " + String.format("%.2f", summary.getSgpa()));
         } catch (SQLException e) {
             showError("Failed to load grades and GPA.", e);
         }

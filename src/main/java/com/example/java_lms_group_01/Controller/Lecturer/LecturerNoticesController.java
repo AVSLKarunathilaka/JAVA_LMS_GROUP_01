@@ -10,8 +10,10 @@ import javafx.scene.control.TextField;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Shows all notices to the lecturer and supports a simple title/content search.
+ */
 public class LecturerNoticesController {
 
     @FXML
@@ -54,18 +56,16 @@ public class LecturerNoticesController {
 
     private void loadNotices(String keyword) {
         try {
-            List<Notice> notices = keyword == null || keyword.isBlank()
-                    ? noticeRepository.findAll()
-                    : noticeRepository.findByKeyword(keyword);
-
+            List<Notice> notices;
+            if (keyword == null || keyword.isBlank()) {
+                notices = noticeRepository.findAll();
+            } else {
+                notices = noticeRepository.findByKeyword(keyword);
+            }
             tblNotices.getItems().setAll(notices);
         } catch (SQLException e) {
             showError("Failed to load notices.", e);
         }
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private void showError(String message, Exception e) {

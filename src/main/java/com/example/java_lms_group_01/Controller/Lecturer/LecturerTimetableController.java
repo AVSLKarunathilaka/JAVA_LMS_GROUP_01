@@ -10,7 +10,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Shows the timetable for the logged-in lecturer.
+ */
 public class LecturerTimetableController {
 
     @FXML
@@ -70,10 +75,22 @@ public class LecturerTimetableController {
         }
 
         try {
-            var rows = lecturerRepository.findTimetableByLecturer(lecturerReg, keyword).stream()
-                    .map(r -> new Timetable(r.timetableId(), r.department(), r.lecId(), r.courseCode(), r.adminId(),
-                            r.day(), parseTime(r.startTime()), parseTime(r.endTime()), r.sessionType()))
-                    .toList();
+            List<LecturerRepository.TimetableRecord> recordList =
+                    lecturerRepository.findTimetableByLecturer(lecturerReg, keyword);
+            List<Timetable> rows = new ArrayList<>();
+            for (LecturerRepository.TimetableRecord record : recordList) {
+                rows.add(new Timetable(
+                        record.getTimetableId(),
+                        record.getDepartment(),
+                        record.getLecId(),
+                        record.getCourseCode(),
+                        record.getAdminId(),
+                        record.getDay(),
+                        parseTime(record.getStartTime()),
+                        parseTime(record.getEndTime()),
+                        record.getSessionType()
+                ));
+            }
             tblTimetable.getItems().setAll(rows);
         } catch (SQLException e) {
             showError("Failed to load lecturer timetable.", e);

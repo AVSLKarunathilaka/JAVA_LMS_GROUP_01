@@ -12,8 +12,10 @@ import javafx.scene.control.TextField;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Shows timetables to the technical officer with simple department/day filtering.
+ */
 public class TechnicalOfficerTimetableController {
 
     @FXML
@@ -90,10 +92,6 @@ public class TechnicalOfficerTimetableController {
         } catch (SQLException e) {
             showError("Failed to load timetables.", e);
         }
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private void showError(String message, Exception e) {

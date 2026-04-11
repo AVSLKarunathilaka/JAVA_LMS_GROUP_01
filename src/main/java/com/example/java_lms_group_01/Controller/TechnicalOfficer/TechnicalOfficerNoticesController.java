@@ -12,9 +12,12 @@ import javafx.scene.control.TextField;
 
 import java.time.LocalDate;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Shows notices to the technical officer and supports simple filtering.
+ */
 public class TechnicalOfficerNoticesController {
 
     @FXML
@@ -62,19 +65,19 @@ public class TechnicalOfficerNoticesController {
         try {
             List<Notice> notices = noticeRepository.findByKeyword(keyword);
             if (publishedDate != null) {
-                notices = notices.stream()
-                        .filter(n -> publishedDate.equals(n.getPublishDate()))
-                        .collect(Collectors.toList());
+                List<Notice> filteredNotices = new ArrayList<>();
+                for (Notice notice : notices) {
+                    if (publishedDate.equals(notice.getPublishDate())) {
+                        filteredNotices.add(notice);
+                    }
+                }
+                notices = filteredNotices;
             }
 
             tblNotices.getItems().setAll(notices);
         } catch (SQLException e) {
             showError("Failed to load notices.", e);
         }
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private void showError(String message, Exception e) {

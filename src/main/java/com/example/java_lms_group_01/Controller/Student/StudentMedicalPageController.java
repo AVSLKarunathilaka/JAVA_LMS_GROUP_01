@@ -9,7 +9,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Shows medical submissions that belong to the logged-in student.
+ */
 public class StudentMedicalPageController {
 
     @FXML
@@ -56,9 +61,21 @@ public class StudentMedicalPageController {
         }
 
         try {
-            var rows = studentRepository.findMedicalByStudent(regNo).stream()
-                    .map(r -> new Medical(r.medicalId(), r.studentReg(), r.courseCode(), r.submissionDate(), r.description(), r.sessionType(), r.attendanceId(), r.approvalStatus(), r.techOfficerReg()))
-                    .toList();
+            List<StudentRepository.MedicalRecord> recordList = studentRepository.findMedicalByStudent(regNo);
+            List<Medical> rows = new ArrayList<>();
+            for (StudentRepository.MedicalRecord record : recordList) {
+                rows.add(new Medical(
+                        record.getMedicalId(),
+                        record.getStudentReg(),
+                        record.getCourseCode(),
+                        record.getSubmissionDate(),
+                        record.getDescription(),
+                        record.getSessionType(),
+                        record.getAttendanceId(),
+                        record.getApprovalStatus(),
+                        record.getTechOfficerReg()
+                ));
+            }
             tblMedical.getItems().setAll(rows);
         } catch (SQLException e) {
             showError("Failed to load medical details.", e);

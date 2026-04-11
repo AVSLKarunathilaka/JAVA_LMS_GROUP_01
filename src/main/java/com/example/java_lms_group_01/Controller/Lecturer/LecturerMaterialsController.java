@@ -12,7 +12,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Lets a lecturer manage course materials for the courses assigned to that lecturer.
+ */
 public class LecturerMaterialsController {
 
     @FXML
@@ -143,9 +148,18 @@ public class LecturerMaterialsController {
 
     private void loadMaterials(String keyword) {
         try {
-            var rows = lecturerRepository.findMaterialsByLecturer(currentLecturer(), keyword).stream()
-                    .map(r -> new Material(r.materialId(), r.courseCode(), r.name(), r.path(), r.type()))
-                    .toList();
+            List<LecturerRepository.MaterialRecord> recordList =
+                    lecturerRepository.findMaterialsByLecturer(currentLecturer(), keyword);
+            List<Material> rows = new ArrayList<>();
+            for (LecturerRepository.MaterialRecord record : recordList) {
+                rows.add(new Material(
+                        record.getMaterialId(),
+                        record.getCourseCode(),
+                        record.getName(),
+                        record.getPath(),
+                        record.getType()
+                ));
+            }
             tblMaterials.getItems().setAll(rows);
         } catch (SQLException e) {
             showError("Failed to load materials.", e);

@@ -12,7 +12,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Shows a student's attendance details and attendance eligibility summary.
+ */
 public class StudentAttendancePageController {
 
     @FXML
@@ -73,20 +78,34 @@ public class StudentAttendancePageController {
         }
 
         try {
-            var summaryRows = studentRepository.findAttendanceEligibilityByStudent(regNo).stream()
-                    .map(r -> new AttendanceEligibilitySummary(
-                            r.courseCode(),
-                            String.valueOf(r.eligibleSessions()),
-                            String.valueOf(r.totalSessions()),
-                            AttendanceEligibilityUtil.formatPercentage(r.eligibleSessions(), r.totalSessions()),
-                            AttendanceEligibilityUtil.toEligibilityStatus(r.eligibleSessions(), r.totalSessions())
-                    ))
-                    .toList();
+            List<StudentRepository.AttendanceEligibilityRecord> summaryRecordList =
+                    studentRepository.findAttendanceEligibilityByStudent(regNo);
+            List<AttendanceEligibilitySummary> summaryRows = new ArrayList<>();
+            for (StudentRepository.AttendanceEligibilityRecord record : summaryRecordList) {
+                summaryRows.add(new AttendanceEligibilitySummary(
+                        record.getCourseCode(),
+                        String.valueOf(record.getEligibleSessions()),
+                        String.valueOf(record.getTotalSessions()),
+                        AttendanceEligibilityUtil.formatPercentage(record.getEligibleSessions(), record.getTotalSessions()),
+                        AttendanceEligibilityUtil.toEligibilityStatus(record.getEligibleSessions(), record.getTotalSessions())
+                ));
+            }
             tblEligibilitySummary.getItems().setAll(summaryRows);
 
-            var rows = studentRepository.findAttendanceByStudent(regNo).stream()
-                    .map(r -> new Attendance(r.attendanceId(), r.studentReg(), r.courseCode(), r.submissionDate(), r.sessionType(), r.attendanceStatus(), r.techOfficerReg()))
-                    .toList();
+            List<StudentRepository.AttendanceRecord> attendanceRecordList =
+                    studentRepository.findAttendanceByStudent(regNo);
+            List<Attendance> rows = new ArrayList<>();
+            for (StudentRepository.AttendanceRecord record : attendanceRecordList) {
+                rows.add(new Attendance(
+                        record.getAttendanceId(),
+                        record.getStudentReg(),
+                        record.getCourseCode(),
+                        record.getSubmissionDate(),
+                        record.getSessionType(),
+                        record.getAttendanceStatus(),
+                        record.getTechOfficerReg()
+                ));
+            }
             tblAttendance.getItems().setAll(rows);
         } catch (SQLException e) {
             showError("Failed to load attendance details.", e);

@@ -19,8 +19,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+/**
+ * Lists course materials for the logged-in student and lets the user open or download them.
+ */
 public class StudentMaterialsPageController {
 
     @FXML
@@ -87,15 +92,25 @@ public class StudentMaterialsPageController {
         }
 
         try {
-            var rows = studentRepository.findMaterialsByStudent(studentReg, keyword).stream()
-                    .map(r -> new Material(r.materialId(), r.courseCode(), r.name(), r.path(), r.type()))
-                    .toList();
+            List<StudentRepository.MaterialRecord> recordList =
+                    studentRepository.findMaterialsByStudent(studentReg, keyword);
+            List<Material> rows = new ArrayList<>();
+            for (StudentRepository.MaterialRecord record : recordList) {
+                rows.add(new Material(
+                        record.getMaterialId(),
+                        record.getCourseCode(),
+                        record.getName(),
+                        record.getPath(),
+                        record.getType()
+                ));
+            }
             tblMaterials.getItems().setAll(rows);
         } catch (SQLException e) {
             showError("Failed to load course materials.", e);
         }
     }
 
+    // Open a local file directly or download a URL first.
     private void downloadMaterial(Material material) {
         String rawPath = material.getPath();
         if (rawPath.isBlank()) {
@@ -122,6 +137,7 @@ public class StudentMaterialsPageController {
         }
     }
 
+    // Download a file from a web URL into the user's Downloads folder.
     private Path downloadFromUrl(Material material) throws Exception {
         Path downloadsDir = Path.of(System.getProperty("user.home"), "Downloads");
         Files.createDirectories(downloadsDir);
@@ -135,6 +151,7 @@ public class StudentMaterialsPageController {
         return targetFile;
     }
 
+    // If a file name already exists, create a new one like file_1.pdf.
     private Path uniquePath(Path file) {
         if (!Files.exists(file)) {
             return file;
@@ -155,6 +172,7 @@ public class StudentMaterialsPageController {
         return candidate;
     }
 
+    // Build a usable local file name for a downloaded material.
     private String buildFileName(Material material) {
         String sanitizedName = material.getName().replaceAll("[\\\\/:*?\"<>|]", "_").trim();
         if (sanitizedName.isBlank()) {
@@ -168,6 +186,7 @@ public class StudentMaterialsPageController {
         return sanitizedName + extension;
     }
 
+    // Try to keep the original file extension when possible.
     private String extensionFromPath(String value) {
         try {
             String pathPart = isWebUrl(value) ? URI.create(value).getPath() : value;

@@ -9,8 +9,10 @@ import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Shows published notices for the logged-in student.
+ */
 public class StudentNoticePageController {
 
     @FXML
@@ -45,10 +47,6 @@ public class StudentNoticePageController {
         } catch (SQLException e) {
             showError("Failed to load notices.", e);
         }
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private void showError(String message, Exception e) {

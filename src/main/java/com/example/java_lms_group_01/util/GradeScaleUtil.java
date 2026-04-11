@@ -1,5 +1,8 @@
 package com.example.java_lms_group_01.util;
 
+/**
+ * Converts numeric marks into letter grades and grade points.
+ */
 public final class GradeScaleUtil {
 
     private GradeScaleUtil() {
