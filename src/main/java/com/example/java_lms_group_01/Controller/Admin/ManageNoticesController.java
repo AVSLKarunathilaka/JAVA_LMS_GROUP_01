@@ -1,6 +1,6 @@
 package com.example.java_lms_group_01.Controller.Admin;
 
-import com.example.java_lms_group_01.Service.AdminService;
+import com.example.java_lms_group_01.Repository.NoticeRepository;
 import com.example.java_lms_group_01.model.Notice;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,7 +49,7 @@ public class ManageNoticesController implements Initializable {
     @FXML
     private TextField txtSearchNotice;
 
-    private final AdminService adminService = new AdminService();
+    private final NoticeRepository noticeRepository = new NoticeRepository();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -72,7 +72,9 @@ public class ManageNoticesController implements Initializable {
 
     private void loadNotices(String keyword) {
         try {
-            List<Notice> notices = adminService.getNotices(keyword);
+            List<Notice> notices = keyword == null || keyword.trim().isEmpty()
+                    ? noticeRepository.findAll()
+                    : noticeRepository.findByKeyword(keyword);
             tblNotices.getItems().setAll(notices);
         } catch (SQLException e) {
             showError("Failed to load notices.", e);
@@ -87,7 +89,7 @@ public class ManageNoticesController implements Initializable {
         }
 
         try {
-            boolean saved = adminService.createNotice(newNotice);
+            boolean saved = noticeRepository.save(newNotice);
             if (saved) {
                 loadNotices(txtSearchNotice.getText());
                 showInfo("Notice added successfully.");
@@ -116,7 +118,7 @@ public class ManageNoticesController implements Initializable {
         }
 
         try {
-            boolean deleted = adminService.deleteNotice(selectedNotice.getNoticeId());
+            boolean deleted = noticeRepository.deleteById(selectedNotice.getNoticeId());
             if (deleted) {
                 loadNotices(txtSearchNotice.getText());
                 showInfo("Notice deleted successfully.");
@@ -142,7 +144,7 @@ public class ManageNoticesController implements Initializable {
         }
 
         try {
-            boolean updated = adminService.updateNotice(updatedNotice);
+            boolean updated = noticeRepository.update(updatedNotice);
             if (updated) {
                 loadNotices(txtSearchNotice.getText());
                 showInfo("Notice updated successfully.");

@@ -17,13 +17,9 @@ import java.util.List;
  */
 public class NoticeRepository {
 
-    // Base select query
     private static final String BASE_SELECT =
             "SELECT notice_id, notice_title, notice_content, publishDate, createdBy FROM notice";
 
-    /**
-     * Get all notices from database
-     */
     public List<Notice> findAll() throws SQLException {
 
         String sql = BASE_SELECT + " ORDER BY publishDate DESC, notice_id DESC";
@@ -42,9 +38,6 @@ public class NoticeRepository {
         return noticeList;
     }
 
-    /**
-     * Search notices using keyword
-     */
     public List<Notice> findByKeyword(String keyword) throws SQLException {
 
         String sql = BASE_SELECT
@@ -78,9 +71,6 @@ public class NoticeRepository {
         return noticeList;
     }
 
-    /**
-     * Save new notice
-     */
     public boolean save(Notice notice) throws SQLException {
 
         String sql = "INSERT INTO notice (notice_title, notice_content, publishDate, createdBy) VALUES (?, ?, ?, ?)";
@@ -105,9 +95,6 @@ public class NoticeRepository {
         return true;
     }
 
-    /**
-     * Update existing notice
-     */
     public boolean update(Notice notice) throws SQLException {
 
         String sql = "UPDATE notice SET notice_title = ?, notice_content = ?, publishDate = ?, createdBy = ? WHERE notice_id = ?";
@@ -121,9 +108,6 @@ public class NoticeRepository {
         return statement.executeUpdate() > 0;
     }
 
-    /**
-     * Delete notice using ID
-     */
     public boolean deleteById(int noticeId) throws SQLException {
 
         String sql = "DELETE FROM notice WHERE notice_id = ?";
@@ -136,9 +120,6 @@ public class NoticeRepository {
         return statement.executeUpdate() > 0;
     }
 
-    /**
-     * Convert one database row into Notice object
-     */
     private Notice mapRow(ResultSet rs) throws SQLException {
 
         Date publishDate = rs.getDate("publishDate");

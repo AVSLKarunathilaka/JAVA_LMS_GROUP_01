@@ -73,7 +73,7 @@ public class LecturerProfileController {
         }
 
         try {
-            com.example.java_lms_group_01.model.UserManagementRow profile =
+            com.example.java_lms_group_01.model.UserRecord profile =
                     userProfileRepository.findLecturerProfile(regNo);
             if (profile == null) {
                 return;

@@ -1,7 +1,7 @@
 package com.example.java_lms_group_01.Controller.Student;
 
 import com.example.java_lms_group_01.Repository.UserProfileRepository;
-import com.example.java_lms_group_01.model.UserManagementRow;
+import com.example.java_lms_group_01.model.UserRecord;
 import com.example.java_lms_group_01.model.users.Student;
 import com.example.java_lms_group_01.util.StudentContext;
 import javafx.fxml.FXML;
@@ -104,7 +104,7 @@ public class StudentProfilePageController {
         }
 
         try {
-            UserManagementRow profile = userProfileRepository.findStudentProfile(regNo);
+            UserRecord profile = userProfileRepository.findStudentProfile(regNo);
             if (profile == null) {
                 return;
             }
@@ -123,7 +123,7 @@ public class StudentProfilePageController {
         }
     }
 
-    private Student mapStudent(UserManagementRow row) {
+    private Student mapStudent(UserRecord row) {
         Student student = new Student();
         student.setRegistrationNo(row.getUserId());
         student.setUserId(row.getUserId());

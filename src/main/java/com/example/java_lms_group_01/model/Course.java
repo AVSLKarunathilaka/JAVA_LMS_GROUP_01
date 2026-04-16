@@ -2,9 +2,6 @@ package com.example.java_lms_group_01.model;
 
 import javafx.beans.property.SimpleStringProperty;
 
-/**
- * Simple course model used by forms, tables, and repositories.
- */
 public class Course {
     private String courseCode;
     private String name;

@@ -10,18 +10,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class handles all database operations related to Course.
- */
 public class CourseRepository {
 
     // Base query
     private static final String BASE_SELECT =
             "SELECT courseCode, name, lecturerRegistrationNo, department, semester, credit, course_type FROM course";
 
-    /**
-     * Get courses with optional filters (department + search keyword)
-     */
     public List<Course> findByFilters(String department, String keyword) throws SQLException {
 
         // Build SQL query step by step
@@ -65,9 +59,6 @@ public class CourseRepository {
         return courseList;
     }
 
-    /**
-     * Get all departments
-     */
     public List<String> findAllDepartments() throws SQLException {
 
         String sql = "SELECT DISTINCT department FROM course WHERE department IS NOT NULL AND department <> '' ORDER BY department";
@@ -85,9 +76,6 @@ public class CourseRepository {
         return departments;
     }
 
-    /**
-     * Save new course
-     */
     public boolean save(Course course) throws SQLException {
 
         String sql = "INSERT INTO course VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -100,9 +88,6 @@ public class CourseRepository {
         return statement.executeUpdate() > 0;
     }
 
-    /**
-     * Update existing course
-     */
     public boolean update(Course course) throws SQLException {
 
         String sql = "UPDATE course SET name=?, lecturerRegistrationNo=?, department=?, semester=?, credit=?, course_type=? WHERE courseCode=?";
@@ -115,9 +100,6 @@ public class CourseRepository {
         return statement.executeUpdate() > 0;
     }
 
-    /**
-     * Delete course by course code
-     */
     public boolean deleteByCourseCode(String courseCode) throws SQLException {
 
         String sql = "DELETE FROM course WHERE courseCode=?";
@@ -130,9 +112,6 @@ public class CourseRepository {
         return statement.executeUpdate() > 0;
     }
 
-    /**
-     * Set course data into PreparedStatement
-     */
     private void setCourseData(PreparedStatement statement, Course course, boolean isUpdate) throws SQLException {
 
         if (!isUpdate) {
@@ -156,9 +135,6 @@ public class CourseRepository {
         }
     }
 
-    /**
-     * Convert ResultSet row into Course object
-     */
     private Course createCourseFromResult(ResultSet rs) throws SQLException {
 
         return new Course(

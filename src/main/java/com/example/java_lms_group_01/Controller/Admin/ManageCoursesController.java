@@ -1,6 +1,6 @@
 package com.example.java_lms_group_01.Controller.Admin;
 
-import com.example.java_lms_group_01.Service.AdminService;
+import com.example.java_lms_group_01.Repository.CourseRepository;
 import com.example.java_lms_group_01.model.Course;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,7 +64,7 @@ public class ManageCoursesController implements Initializable {
     @FXML
     private TextField txtSearchCourse;
 
-    private final AdminService adminService = new AdminService();
+    private final CourseRepository courseRepository = new CourseRepository();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -91,7 +91,7 @@ public class ManageCoursesController implements Initializable {
         try {
             cmbDeptFilter.getItems().clear();
             cmbDeptFilter.getItems().add("All");
-            cmbDeptFilter.getItems().addAll(adminService.getCourseDepartments());
+            cmbDeptFilter.getItems().addAll(courseRepository.findAllDepartments());
             cmbDeptFilter.setValue(cmbDeptFilter.getItems().contains(selectedValue) ? selectedValue : "All");
         } catch (SQLException e) {
             showError("Failed to load department filters.", e);
@@ -107,7 +107,7 @@ public class ManageCoursesController implements Initializable {
     // Load courses using the current filter values.
     private void loadCourses(String department, String keyword) {
         try {
-            List<Course> courses = adminService.getCourses(department, keyword);
+            List<Course> courses = courseRepository.findByFilters(department, keyword);
             tblCourses.getItems().setAll(courses);
         } catch (SQLException e) {
             showError("Failed to load courses.", e);
@@ -122,7 +122,7 @@ public class ManageCoursesController implements Initializable {
         }
 
         try {
-            boolean saved = adminService.addCourse(course);
+            boolean saved = courseRepository.save(course);
             if (saved) {
                 String selectedDept = cmbDeptFilter.getValue();
                 loadDepartmentFilter(selectedDept);
@@ -153,7 +153,7 @@ public class ManageCoursesController implements Initializable {
         }
 
         try {
-            boolean deleted = adminService.deleteCourse(selectedCourse.getCourseCode());
+            boolean deleted = courseRepository.deleteByCourseCode(selectedCourse.getCourseCode());
             if (deleted) {
                 String selectedDept = cmbDeptFilter.getValue();
                 loadDepartmentFilter(selectedDept);
@@ -181,7 +181,7 @@ public class ManageCoursesController implements Initializable {
         }
 
         try {
-            boolean updated = adminService.updateCourse(updatedCourse);
+            boolean updated = courseRepository.update(updatedCourse);
             if (updated) {
                 String selectedDept = cmbDeptFilter.getValue();
                 loadDepartmentFilter(selectedDept);
