@@ -4,239 +4,184 @@ import com.example.java_lms_group_01.Repository.AdminRepository;
 import com.example.java_lms_group_01.model.Course;
 import com.example.java_lms_group_01.model.EnrollmentRecord;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class AdminEnrollmentController {
 
-    @FXML
-    private TextField txtSearchEnrollment;
-    @FXML
-    private ComboBox<String> cmbBatchFilter;
-    @FXML
-    private TableView<EnrollmentRecord> tblEnrollments;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colStudentReg;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colStudentName;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colBatch;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colCourseCode;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colCourseName;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colEnrollmentDate;
-    @FXML
-    private TableColumn<EnrollmentRecord, String> colStatus;
+    @FXML private TextField txtSearchEnrollment;
+    @FXML private ComboBox<String> cmbBatchFilter;
+    @FXML private TableView<EnrollmentRecord> tblEnrollments;
+    @FXML private TableColumn<EnrollmentRecord, String> colStudentReg;
+    @FXML private TableColumn<EnrollmentRecord, String> colStudentName;
+    @FXML private TableColumn<EnrollmentRecord, String> colBatch;
+    @FXML private TableColumn<EnrollmentRecord, String> colCourseCode;
+    @FXML private TableColumn<EnrollmentRecord, String> colCourseName;
+    @FXML private TableColumn<EnrollmentRecord, String> colEnrollmentDate;
+    @FXML private TableColumn<EnrollmentRecord, String> colStatus;
+
 
     private final AdminRepository adminRepository = new AdminRepository();
 
     @FXML
     public void initialize() {
+        // Tell the table columns which data to show
         setupColumns();
-        loadBatchFilter("All");
+
+        // Load data into the Batch dropdown
+        loadBatchFilter();
+
+        // Load all enrollments into the table
         loadEnrollments();
 
-        txtSearchEnrollment.textProperty().addListener((obs, oldValue, newValue) -> loadEnrollments());
-        cmbBatchFilter.valueProperty().addListener((obs, oldValue, newValue) -> loadEnrollments());
+        // Add listeners: When typing or picking a batch, the table updates automatically
+        txtSearchEnrollment.textProperty().addListener((obs, oldVal, newVal) -> loadEnrollments());
+        cmbBatchFilter.valueProperty().addListener((obs, oldVal, newVal) -> loadEnrollments());
     }
 
-    // Set the enrollment table columns.
     private void setupColumns() {
-        colStudentReg.setCellValueFactory(d -> d.getValue().studentRegProperty());
-        colStudentName.setCellValueFactory(d -> d.getValue().studentNameProperty());
-        colBatch.setCellValueFactory(d -> d.getValue().batchProperty());
-        colCourseCode.setCellValueFactory(d -> d.getValue().courseCodeProperty());
-        colCourseName.setCellValueFactory(d -> d.getValue().courseNameProperty());
-        colEnrollmentDate.setCellValueFactory(d -> d.getValue().enrollmentDateProperty());
-        colStatus.setCellValueFactory(d -> d.getValue().statusProperty());
+        colStudentReg.setCellValueFactory(data -> data.getValue().studentRegProperty());
+        colStudentName.setCellValueFactory(data -> data.getValue().studentNameProperty());
+        colBatch.setCellValueFactory(data -> data.getValue().batchProperty());
+        colCourseCode.setCellValueFactory(data -> data.getValue().courseCodeProperty());
+        colCourseName.setCellValueFactory(data -> data.getValue().courseNameProperty());
+        colEnrollmentDate.setCellValueFactory(data -> data.getValue().enrollmentDateProperty());
+        colStatus.setCellValueFactory(data -> data.getValue().statusProperty());
     }
 
+    // Add a new course to a student.
     @FXML
     private void btnOnActionAddEnrollment() {
-        EnrollmentRecord selected = selectedRecord();
+        // Get the student selected in the table
+        EnrollmentRecord selected = tblEnrollments.getSelectionModel().getSelectedItem();
+
         if (selected == null) {
+            showInfo("Please select a student from the table first.");
             return;
         }
 
         try {
+            // Get courses the student hasn't taken yet
             List<Course> courses = adminRepository.findAvailableCoursesForStudent(selected.getStudentReg());
+
             if (courses.isEmpty()) {
-                showInfo("No available courses for the selected student.");
+                showInfo("No available courses for this student.");
                 return;
             }
 
-            Optional<Course> course = openEnrollmentDialog(selected, courses);
-            if (course.isEmpty()) {
-                return;
-            }
+            // Open a pop-up window to pick a course
+            Optional<Course> result = openEnrollmentDialog(selected, courses);
 
-            if (adminRepository.createEnrollment(selected.getStudentReg(), course.get().getCourseCode())) {
-                loadBatchFilter(text(cmbBatchFilter.getValue()));
-                loadEnrollments();
-                showInfo("Enrollment created as active.");
-            } else {
-                showInfo("No enrollment was created.");
+            // If the user picked a course and clicked "Add"
+            if (result.isPresent()) {
+                boolean success = adminRepository.createEnrollment(selected.getStudentReg(), result.get().getCourseCode());
+                if (success) {
+                    loadEnrollments();
+                    showInfo("Enrollment added successfully!");
+                }
             }
-        } catch (IllegalArgumentException | SQLException e) {
-            showError("Failed to create enrollment.", e);
+        } catch (SQLException e) {
+            showError("Database Error", e);
         }
     }
 
-    @FXML
-    private void btnOnActionMakeCompleted() {
-        updateSelectedEnrollmentStatus("completed");
+    @FXML private void btnOnActionMakeCompleted() { updateStatus("completed"); }
+    @FXML private void btnOnActionMakeDropped() { updateStatus("dropped"); }
+    @FXML private void btnOnActionRefresh() { loadEnrollments(); }
+
+
+    // Updates the status (Completed/Dropped) of the selected record.
+    private void updateStatus(String newStatus) {
+        EnrollmentRecord selected = tblEnrollments.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            showInfo("Please select an enrollment record.");
+            return;
+        }
+
+        try {
+            boolean success = adminRepository.updateEnrollmentStatus(selected.getEnrollmentId(), newStatus);
+            if (success) {
+                loadEnrollments();
+                showInfo("Status updated to: " + newStatus);
+            }
+        } catch (SQLException e) {
+            showError("Update Failed", e);
+        }
     }
 
-    @FXML
-    private void btnOnActionMakeDropped() {
-        updateSelectedEnrollmentStatus("dropped");
-    }
 
-    @FXML
-    private void btnOnActionRefresh() {
-        loadBatchFilter(text(cmbBatchFilter.getValue()));
-        loadEnrollments();
-    }
-
-    // Load the batch filter list.
-    private void loadBatchFilter(String selectedValue) {
+    // Fills the ComboBox with Batch numbers from the DB.
+    private void loadBatchFilter() {
         try {
             cmbBatchFilter.getItems().clear();
             cmbBatchFilter.getItems().add("All");
             cmbBatchFilter.getItems().addAll(adminRepository.findStudentBatches());
-            cmbBatchFilter.setValue(cmbBatchFilter.getItems().contains(selectedValue) ? selectedValue : "All");
+            cmbBatchFilter.setValue("All");
         } catch (SQLException e) {
-            showError("Failed to load batch filter.", e);
+            showError("Could not load batches", e);
         }
     }
 
-    // Load all enrollment rows using the current search and batch filter.
+
+    // Refreshes the table data based on Search box and Batch filter.
     private void loadEnrollments() {
         try {
-            tblEnrollments.getItems().setAll(
-                    adminRepository.findEnrollments(
-                            text(txtSearchEnrollment),
-                            cmbBatchFilter.getValue()
-                    )
-            );
+            String searchText = txtSearchEnrollment.getText().trim();
+            String batchFilter = cmbBatchFilter.getValue();
+
+            // Get data from Database and put into Table
+            List<EnrollmentRecord> list = adminRepository.findEnrollments(searchText, batchFilter);
+            tblEnrollments.getItems().setAll(list);
         } catch (SQLException e) {
-            showError("Failed to load students.", e);
+            showError("Could not load enrollment data", e);
         }
     }
 
-    private void updateSelectedEnrollmentStatus(String status) {
-        EnrollmentRecord selected = selectedRecord();
-        if (selected == null) {
-            return;
-        }
 
-        if (!selected.hasEnrollment()) {
-            showInfo("This student does not have an enrollment for status update.");
-            return;
-        }
-
-        try {
-            if (adminRepository.updateEnrollmentStatus(selected.getEnrollmentId(), status)) {
-                loadEnrollments();
-                showInfo("Enrollment status updated to " + status + ".");
-            } else {
-                showInfo("No enrollment was updated.");
-            }
-        } catch (IllegalArgumentException | SQLException e) {
-            showError("Failed to update enrollment status.", e);
-        }
-    }
-
-    // Open a small dialog to pick one course for the selected student.
-    private Optional<Course> openEnrollmentDialog(EnrollmentRecord selected, List<Course> courses) {
+    private Optional<Course> openEnrollmentDialog(EnrollmentRecord student, List<Course> courses) {
         Dialog<Course> dialog = new Dialog<>();
-        dialog.setTitle("Add Enrollment");
-        dialog.setHeaderText("Create a new active enrollment for " + selected.getStudentReg());
+        dialog.setTitle("Enroll Student");
 
-        ButtonType save = new ButtonType("Add Enrollment", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
+        ButtonType addBtnType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addBtnType, ButtonType.CANCEL);
 
-        ComboBox<String> cmbCourse = new ComboBox<>();
-        List<String> labels = new ArrayList<>();
-        for (Course course : courses) {
-            labels.add(text(course.getCourseCode()) + " - " + text(course.getName()));
-        }
-        cmbCourse.getItems().setAll(labels);
+        // Simple ComboBox for courses
+        ComboBox<Course> courseBox = new ComboBox<>();
+        courseBox.getItems().setAll(courses);
 
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.add(new Label("Student Reg:"), 0, 0);
-        grid.add(new Label(text(selected.getStudentReg())), 1, 0);
-        grid.add(new Label("Student Name:"), 0, 1);
-        grid.add(new Label(text(selected.getStudentName())), 1, 1);
-        grid.add(new Label("Course:"), 0, 2);
-        grid.add(cmbCourse, 1, 2);
+        grid.setHgap(10); grid.setVgap(10);
+        grid.add(new Label("Student: " + student.getStudentName()), 0, 0);
+        grid.add(new Label("Select Course:"), 0, 1);
+        grid.add(courseBox, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
-        dialog.setResultConverter(button -> {
-            if (button != save) {
-                return null;
-            }
-            int index = cmbCourse.getSelectionModel().getSelectedIndex();
-            if (index < 0) {
-                showInfo("Please select a course.");
-                return null;
-            }
-            return courses.get(index);
+
+        // Convert the "Add" button click into a Course object
+        dialog.setResultConverter(btn -> {
+            if (btn == addBtnType) return courseBox.getValue();
+            return null;
         });
 
-        Optional<Course> result = dialog.showAndWait();
-        return result;
+        return dialog.showAndWait();
     }
 
-    private EnrollmentRecord selectedRecord() {
-        EnrollmentRecord selected = tblEnrollments.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showInfo("Please select a student row.");
-            return null;
-        }
-        return selected;
-    }
 
-    private String text(String value) {
-        return value == null ? "" : value.trim();
-    }
-
-    private String text(TextField field) {
-        return field.getText() == null ? "" : field.getText().trim();
-    }
-
-    private String text(ComboBox<String> comboBox) {
-        return comboBox.getValue() == null ? "" : comboBox.getValue().trim();
-    }
-
-    private void showInfo(String message) {
+    private void showInfo(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 
-    private void showError(String message, Exception e) {
+    private void showError(String msg, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("Database Error");
-        alert.setContentText(message + "\n" + e.getMessage());
+        alert.setHeaderText(msg);
+        alert.setContentText(e.getMessage());
         alert.showAndWait();
     }
 }

@@ -8,107 +8,91 @@ import javafx.scene.control.TextField;
 
 public class CourseFormController {
 
-    @FXML
-    private TextField txtCourseCode;
+    @FXML private TextField txtCourseCode;
+    @FXML private TextField txtCredit;
+    @FXML private TextField txtDepartment;
+    @FXML private TextField txtLecturerRegNo;
+    @FXML private TextField txtName;
+    @FXML private TextField txtSemester;
+    @FXML private ComboBox<CourseType> cmbCourseType;
 
-    @FXML
-    private TextField txtCredit;
-
-    @FXML
-    private TextField txtDepartment;
-
-    @FXML
-    private TextField txtLecturerRegNo;
-
-    @FXML
-    private TextField txtName;
-
-    @FXML
-    private TextField txtSemester;
-
-    @FXML
-    private ComboBox<CourseType> cmbCourseType;
-
+    // Prepares the form for adding a NEW course.
     public void setupForCreate() {
+        // Clear all fields just in case
+        clearFields();
+
+        // Ensure ID field is enabled and fill the dropdown
         txtCourseCode.setDisable(false);
         cmbCourseType.getItems().setAll(CourseType.values());
-        cmbCourseType.setValue(CourseType.THEORY);
+        cmbCourseType.setValue(CourseType.THEORY); // Default value
     }
 
+    // Prepares the form for EDITING an existing course.
     public void setupForEdit(Course course) {
+        // First, do the basic setup
         setupForCreate();
 
+        // Fill the text fields with the existing course data
         txtCourseCode.setText(course.getCourseCode());
-        txtCourseCode.setDisable(true);
+        txtCourseCode.setDisable(true); // Don't allow changing the ID during edit
+
         txtName.setText(course.getName());
         txtCredit.setText(String.valueOf(course.getCredit()));
-        txtLecturerRegNo.setText(getSafeText(course.getLecturerRegistrationNo()));
-        txtDepartment.setText(getSafeText(course.getDepartment()));
-        txtSemester.setText(getSafeText(course.getSemester()));
+        txtLecturerRegNo.setText(course.getLecturerRegistrationNo());
+        txtDepartment.setText(course.getDepartment());
+        txtSemester.setText(course.getSemester());
         cmbCourseType.setValue(course.getCourseTypeEnum());
     }
 
+
+    // create a Course object.
     public Course buildCourse() {
-        String courseCode = getTextFieldValue(txtCourseCode);
-        String courseName = getTextFieldValue(txtName);
-        String lecturerRegistrationNumber = getTextFieldValue(txtLecturerRegNo);
-        String department = getTextFieldValue(txtDepartment);
-        String semester = getTextFieldValue(txtSemester);
-        CourseType selectedCourseType = cmbCourseType.getValue();
+        // Get values from text fields (and trim extra spaces)
+        String code = txtCourseCode.getText().trim();
+        String name = txtName.getText().trim();
+        String dept = txtDepartment.getText().trim();
+        String sem = txtSemester.getText().trim();
+        String lecturer = txtLecturerRegNo.getText().trim();
 
-        if (courseCode.isBlank()) {
-            throw new IllegalArgumentException("Course code is required.");
+        // Simple Validation: Check if fields are empty
+        if (code.isEmpty() || name.isEmpty() || dept.isEmpty() || sem.isEmpty()) {
+            throw new IllegalArgumentException("Please fill in all required fields.");
         }
 
-        if (courseName.isBlank()) {
-            throw new IllegalArgumentException("Course name is required.");
+        if (cmbCourseType.getValue() == null) {
+            throw new IllegalArgumentException("Please select a course type.");
         }
 
-        if (department.isBlank()) {
-            throw new IllegalArgumentException("Department is required.");
-        }
-
-        if (semester.isBlank()) {
-            throw new IllegalArgumentException("Semester is required.");
-        }
-
-        if (selectedCourseType == null) {
-            throw new IllegalArgumentException("Course type is required.");
-        }
-
+        // Number Validation: Convert credit text to a number
         int creditValue;
         try {
-            creditValue = Integer.parseInt(getTextFieldValue(txtCredit));
-        } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("Credit must be a valid number.");
+            creditValue = Integer.parseInt(txtCredit.getText().trim());
+            if (creditValue <= 0) {
+                throw new Exception(); // Go to catch block
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Credit must be a positive number.");
         }
 
-        if (creditValue <= 0) {
-            throw new IllegalArgumentException("Credit must be greater than 0.");
-        }
-
+        // Return the new Course object
         return new Course(
-                courseCode,
-                courseName,
-                lecturerRegistrationNumber.isBlank() ? null : lecturerRegistrationNumber,
-                department,
-                semester,
+                code,
+                name,
+                lecturer.isEmpty() ? null : lecturer,
+                dept,
+                sem,
                 creditValue,
-                selectedCourseType
+                cmbCourseType.getValue()
         );
     }
 
-    private String getTextFieldValue(TextField textField) {
-        if (textField.getText() == null) {
-            return "";
-        }
-        return textField.getText().trim();
-    }
 
-    private String getSafeText(String text) {
-        if (text == null) {
-            return "";
-        }
-        return text;
+    private void clearFields() {
+        txtCourseCode.clear();
+        txtName.clear();
+        txtCredit.clear();
+        txtLecturerRegNo.clear();
+        txtDepartment.clear();
+        txtSemester.clear();
     }
 }

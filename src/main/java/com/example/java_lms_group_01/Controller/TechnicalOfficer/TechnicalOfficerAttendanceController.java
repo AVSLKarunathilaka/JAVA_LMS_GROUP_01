@@ -3,7 +3,7 @@ package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 import com.example.java_lms_group_01.Repository.TechnicalOfficerRepository;
 import com.example.java_lms_group_01.model.Attendance;
 import com.example.java_lms_group_01.model.request.AttendanceRequest;
-import com.example.java_lms_group_01.util.LoggedInTechnicalOfficer;
+import com.example.java_lms_group_01.session.LoggedInTechnicalOfficer;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

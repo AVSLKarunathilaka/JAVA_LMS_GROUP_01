@@ -4,7 +4,7 @@ import com.example.java_lms_group_01.Repository.TechnicalOfficerRepository;
 import com.example.java_lms_group_01.Repository.UserProfileRepository;
 import com.example.java_lms_group_01.model.UserRecord;
 import com.example.java_lms_group_01.util.ProfileImageUtil;
-import com.example.java_lms_group_01.util.LoggedInTechnicalOfficer;
+import com.example.java_lms_group_01.session.LoggedInTechnicalOfficer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
