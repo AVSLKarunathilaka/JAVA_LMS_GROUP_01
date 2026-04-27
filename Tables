@@ -297,8 +297,8 @@ VALUES
 -- ICT2122 (Theory)
 ('L001','TG/2023/1701','ICT2122', 82, NULL, NULL, NULL, NULL, 74, 88, NULL),
 
--- ICT2132 (Practical) (already inserted, skip OR update instead)
--- ('L001','TG/2023/1701','ICT2132',85,90,88,92,85,80,NULL,85),
+-- ICT2132 (Practical)
+('L001','TG/2023/1701','ICT2132',85,90,88,92,85,80,NULL,85),
 
 -- ICT2142 (Theory)
 ('L001','TG/2023/1701','ICT2142', 78, NULL, NULL, 80, NULL, NULL, 82, NULL),
@@ -470,12 +470,11 @@ INSERT INTO notice (notice_title, notice_content, publishDate, createdBy) VALUES
 ('Eligibility Notice','CA >=40% and Attendance >=80% required','2026-03-01','ADM001');
 
 INSERT INTO exam_attendance (studentReg, courseCode, status, attendanceDate) VALUES
-('TG/2023/1701','ENG2122','present','2026-04-10');
-('TG/2023/1701','ICT2113','present','2026-04-10');
-('TG/2023/1701','ICT2122','present','2026-04-10');
-('TG/2023/1701','ICT2132','present','2026-04-10');
-('TG/2023/1701','ICT2142','present','2026-04-10');
-('TG/2023/1701','ICT2152','present','2026-04-10');
-('TG/2023/1701','ICT2152','present','2026-04-10');
-('TG/2023/1701','TCS2112','present','2026-04-10');
+('TG/2023/1701','ENG2122','present','2026-04-10'),
+('TG/2023/1701','ICT2113','present','2026-04-10'),
+('TG/2023/1701','ICT2122','present','2026-04-10'),
+('TG/2023/1701','ICT2132','present','2026-04-10'),
+('TG/2023/1701','ICT2142','present','2026-04-10'),
+('TG/2023/1701','ICT2152','present','2026-04-10'),
+('TG/2023/1701','TCS2112','present','2026-04-10'),
 ('TG/2023/1701','TCS2122','present','2026-04-10');

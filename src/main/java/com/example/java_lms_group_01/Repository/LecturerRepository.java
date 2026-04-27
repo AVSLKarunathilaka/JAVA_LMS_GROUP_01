@@ -114,20 +114,21 @@ public class LecturerRepository {
         }
     }
 
-    public List<Material> findMaterialsByLecturer(String lecturerReg, String keyword) throws SQLException {
-        String sql = "SELECT material_id, courseCode, name, path, material_type FROM lecture_materials WHERE courseCode IN (SELECT courseCode FROM course WHERE lecturerRegistrationNo = ?) AND (? = '' OR courseCode LIKE ? OR name LIKE ?) ORDER BY material_id DESC";
-        String key = keyword == null ? "" : keyword.trim();
-        String pattern = "%" + key + "%";
+    public List<Material> findMaterialsByLecturer(String lecturerReg) throws SQLException {
+        String sql = "SELECT material_id, courseCode, name, path, material_type " +
+                "FROM lecture_materials " +
+                "WHERE courseCode IN (" +
+                "   SELECT courseCode FROM course WHERE lecturerRegistrationNo = ?" +
+                ") ORDER BY material_id DESC";
 
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
+
             statement.setString(1, lecturerReg);
-            statement.setString(2, key);
-            statement.setString(3, pattern);
-            statement.setString(4, pattern);
 
             try (ResultSet rs = statement.executeQuery()) {
                 List<Material> list = new ArrayList<>();
+
                 while (rs.next()) {
                     list.add(new Material(
                             rs.getString("material_id"),
@@ -160,6 +161,7 @@ public class LecturerRepository {
                 List<Student> list = new ArrayList<>();
                 while (rs.next()) {
                     AcademicSummary summary = markRepository.calculateAcademicSummary(connection, rs.getString("registrationNo"));
+
                     list.add(new Student(
                             rs.getString("registrationNo"),
                             rs.getString("firstName") + " " + rs.getString("lastName"),

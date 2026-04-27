@@ -152,7 +152,7 @@ public class LecturerMaterialsController {
     private void loadMaterials() {
         try {
             tblMaterials.getItems().setAll(
-                    lecturerRepository.findMaterialsByLecturer(currentLecturer(), null)
+                    lecturerRepository.findMaterialsByLecturer(currentLecturer())
             );
         } catch (SQLException e) {
             showError("Failed to load materials.", e);

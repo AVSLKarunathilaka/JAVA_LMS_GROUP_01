@@ -15,7 +15,6 @@ import java.util.List;
 
 public class StudentMaterialsPageController {
 
-    // --- FXML UI COMPONENTS ---
     @FXML
     private TableView<Material> tblMaterials;
 
@@ -117,12 +116,6 @@ public class StudentMaterialsPageController {
         } catch (Exception e) {
             showErrorMessage("Error", "Could not open the file.");
         }
-    }
-
-    @FXML
-    private void refreshTable() {
-        // Simple refresh button logic
-        loadMaterialsData();
     }
 
     private String getLoggedStudentId() {
