@@ -1,3 +1,4 @@
+//controller and database middle layer
 package com.example.java_lms_group_01.Repository;
 
 import com.example.java_lms_group_01.model.Attendance;
@@ -12,10 +13,12 @@ import java.util.List;
 
 public class TechnicalOfficerRepository {
 
+    //smaller repositories
     private final AttendanceRepository attendanceRepository = new AttendanceRepository();
     private final MedicalRepository medicalRepository = new MedicalRepository();
     private final NoticeRepository noticeRepository = new NoticeRepository();
 
+    //====exam attendance====
     public void addExamAttendance(ExamAttendanceRequest request) throws SQLException {
         attendanceRepository.addExamAttendance(request);
     }
@@ -32,6 +35,7 @@ public class TechnicalOfficerRepository {
         return attendanceRepository.findExamAttendance(keyword);
     }
 
+    //====normal attendance====
     public void addAttendance(AttendanceRequest request) throws SQLException {
         attendanceRepository.addAttendance(request);
     }
@@ -48,6 +52,7 @@ public class TechnicalOfficerRepository {
         return attendanceRepository.findAttendance(keyword);
     }
 
+    //====medical====
     public void addMedical(MedicalRequest request) throws SQLException {
         medicalRepository.addMedical(request);
     }
@@ -64,6 +69,7 @@ public class TechnicalOfficerRepository {
         return medicalRepository.findMedical(keyword);
     }
 
+    //====dashbords counts====
     public int countAttendance() throws SQLException {
         return attendanceRepository.countAttendance();
     }

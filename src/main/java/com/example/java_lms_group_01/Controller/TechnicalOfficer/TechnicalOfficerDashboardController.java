@@ -1,3 +1,4 @@
+//control dashboard ui
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
 import com.example.java_lms_group_01.Repository.TechnicalOfficerRepository;
@@ -24,15 +25,19 @@ import java.util.List;
 
 public class TechnicalOfficerDashboardController {
 
+    //ui labels,profile image,main content area
     @FXML private Label lblRegistrationNo, lblOfficerName, lblOfficerEmail;
     @FXML private Label lblAttendanceCount, lblMedicalCount, lblUnreadNoticeCount;
     @FXML private ImageView imgProfile;
     @FXML private AnchorPane contentArea;
 
+    //data base access
     private final UserProfileRepository userProfileRepository = new UserProfileRepository();
     private final TechnicalOfficerRepository technicalOfficerRepository = new TechnicalOfficerRepository();
+    //dashboard orginal content sv
     private final List<Node> dashboardHomeContent = new ArrayList<>();
 
+    //intialize
     @FXML
     public void initialize() {
         // Set default values when the dashboard opens
@@ -57,7 +62,7 @@ public class TechnicalOfficerDashboardController {
         // Display ID on the dashboard
         lblRegistrationNo.setText("Registration No: " + registrationNo);
 
-        // Get name/email/image from database
+        // Get name/email/image from database(profile data)
         loadOfficerProfile(registrationNo);
 
         // Update the small counter boxes
@@ -102,6 +107,7 @@ public class TechnicalOfficerDashboardController {
         loadContent("/view/technicalofficer/technical_officer_timetable.fxml");
     }
 
+    //logout function
     @FXML
     private void logout(ActionEvent event) {
         // Clear login session
@@ -138,6 +144,7 @@ public class TechnicalOfficerDashboardController {
         }
     }
 
+    //profile data load to ui(from db)
     private void loadOfficerProfile(String registrationNo) {
         try {
             UserRecord profile = userProfileRepository.findTechnicalOfficerProfile(registrationNo);
@@ -155,6 +162,7 @@ public class TechnicalOfficerDashboardController {
         }
     }
 
+    //update dashboard statistics
     private void updateDashboardStats() {
         try {
             // Ask repository for counts to show on the main cards
@@ -167,6 +175,7 @@ public class TechnicalOfficerDashboardController {
         }
     }
 
+    //display errror mzg
     private void showError(String title, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

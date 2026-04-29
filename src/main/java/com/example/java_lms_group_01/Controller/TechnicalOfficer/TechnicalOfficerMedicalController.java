@@ -1,3 +1,4 @@
+//medical record ui control
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
 import com.example.java_lms_group_01.Repository.TechnicalOfficerRepository;
@@ -15,17 +16,21 @@ import java.util.List;
 
 public class TechnicalOfficerMedicalController {
 
+    //inputs feilds
     @FXML private TextField txtStudentRegNo, txtCourseCode, txtAttendanceId, txtSearch;
     @FXML private TextArea txtDescription;
     @FXML private DatePicker dpSubmissionDate;
     @FXML private ComboBox<String> cmbSessionType;
 
+    //display data (table view)
     @FXML private TableView<Medical> tblMedical;
     @FXML private TableColumn<Medical, String> colMedicalId, colStudentRegNo, colCourseCode,
             colDate, colDescription, colSessionType, colAttendanceId, colApprovalStatus, colTechOfficerReg;
 
+    //connect database
     private final TechnicalOfficerRepository technicalOfficerRepository = new TechnicalOfficerRepository();
 
+    //initialize(automaticaly run when open the page)
     @FXML
     public void initialize() {
         // Setup Dropdown
@@ -60,10 +65,11 @@ public class TechnicalOfficerMedicalController {
             }
         });
 
-        // Initial load
+        // Initial load(frist time data)
         loadMedicalData("");
     }
 
+    //add button
     @FXML
     private void addRecord(ActionEvent event) {
         if (isFormValid()) {
@@ -80,6 +86,7 @@ public class TechnicalOfficerMedicalController {
         }
     }
 
+    //update button
     @FXML
     private void updateRecord(ActionEvent event) {
         Medical selected = tblMedical.getSelectionModel().getSelectedItem();
@@ -94,6 +101,7 @@ public class TechnicalOfficerMedicalController {
                 int id = Integer.parseInt(selected.getMedicalId());
                 MedicalRequest request = createRequest();
 
+                //db update
                 technicalOfficerRepository.updateMedical(id, request);
                 loadMedicalData(txtSearch.getText());
                 showInfo("Record updated!");
@@ -103,6 +111,7 @@ public class TechnicalOfficerMedicalController {
         }
     }
 
+    //delete button
     @FXML
     private void deleteRecord(ActionEvent event) {
         Medical selected = tblMedical.getSelectionModel().getSelectedItem();
@@ -116,6 +125,7 @@ public class TechnicalOfficerMedicalController {
             int medId = Integer.parseInt(selected.getMedicalId());
             int attId = Integer.parseInt(selected.getAttendanceId());
 
+            //db delete
             technicalOfficerRepository.deleteMedical(medId, attId);
             loadMedicalData(txtSearch.getText());
             clearFormFields();
@@ -125,22 +135,26 @@ public class TechnicalOfficerMedicalController {
         }
     }
 
+    //clear form
     @FXML
     private void clearForm(ActionEvent event) {
         clearFormFields();
     }
 
+    //search recod
     @FXML
     private void searchRecords(ActionEvent event) {
         loadMedicalData(txtSearch.getText());
     }
 
+    //refresh
     @FXML
     private void refreshRecords(ActionEvent event) {
         txtSearch.clear();
         loadMedicalData("");
     }
 
+    //load data to table from db
     private void loadMedicalData(String keyword) {
         try {
             List<Medical> list = technicalOfficerRepository.findMedical(keyword);
@@ -150,6 +164,7 @@ public class TechnicalOfficerMedicalController {
         }
     }
 
+    //form validation
     private boolean isFormValid() {
         // Check if basic text fields are empty
         if (txtStudentRegNo.getText().isBlank() ||
@@ -173,6 +188,7 @@ public class TechnicalOfficerMedicalController {
         }
     }
 
+    //create request object
     private MedicalRequest createRequest() {
         // Get the logged-in officer's ID
         String officerReg = LoggedInTechnicalOfficer.getRegistrationNo();
@@ -190,6 +206,7 @@ public class TechnicalOfficerMedicalController {
         );
     }
 
+    //clear form
     private void clearFormFields() {
         txtStudentRegNo.clear();
         txtCourseCode.clear();
@@ -200,16 +217,19 @@ public class TechnicalOfficerMedicalController {
         tblMedical.getSelectionModel().clearSelection();
     }
 
+    // Info message
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.showAndWait();
     }
 
+    // warning message
     private void showWarning(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message);
         alert.showAndWait();
     }
 
+    // error message
     private void showError(String message, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message + "\n" + e.getMessage());
         alert.showAndWait();

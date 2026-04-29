@@ -1,3 +1,4 @@
+//technical officer profile page control
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
 import com.example.java_lms_group_01.Repository.UserProfileRepository;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 
 public class TechnicalOfficerProfileController {
 
+    //text feilds
     @FXML private TextField txtRegistrationNo;
     @FXML private TextField txtFirstName;
     @FXML private TextField txtLastName;
@@ -19,8 +21,10 @@ public class TechnicalOfficerProfileController {
     @FXML private TextField txtAddress;
     @FXML private TextField txtPicturePath;
 
+    //access db
     private final UserProfileRepository userProfileRepository = new UserProfileRepository();
 
+    //initialize
     @FXML
     public void initialize() {
         // Lock the Registration Number field so it cannot be changed
@@ -30,11 +34,13 @@ public class TechnicalOfficerProfileController {
         loadProfileData();
     }
 
+    //sv button action
     @FXML
     private void saveProfile() {
         // Get the ID of the person currently logged in
         String regNo = LoggedInTechnicalOfficer.getRegistrationNo();
 
+        //session check
         if (regNo == null || regNo.isEmpty()) {
             showSimpleAlert(Alert.AlertType.WARNING, "Session Error", "Please login again.");
             return;
@@ -59,6 +65,7 @@ public class TechnicalOfficerProfileController {
         }
     }
 
+    //methoad - fetch profile data from db
     private void loadProfileData() {
         String regNo = LoggedInTechnicalOfficer.getRegistrationNo();
 
@@ -89,6 +96,7 @@ public class TechnicalOfficerProfileController {
     }
 
 
+    //alert mzgs
     private void showSimpleAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

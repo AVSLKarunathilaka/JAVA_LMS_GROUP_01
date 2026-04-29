@@ -1,3 +1,4 @@
+//control notices display ui
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
 import com.example.java_lms_group_01.Repository.NoticeRepository;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class TechnicalOfficerNoticesController {
 
+    // Table View
     @FXML private TableView<Notice> tblNotices;
 
     @FXML private TableColumn<Notice, String> colNoticeId;
@@ -20,8 +22,10 @@ public class TechnicalOfficerNoticesController {
     @FXML private TableColumn<Notice, String> colPublishDate;
     @FXML private TableColumn<Notice, String> colCreatedBy;
 
+    //database access
     private final NoticeRepository noticeRepository = new NoticeRepository();
 
+    //initialize
     @FXML
     public void initialize() {
         // Bind table columns to the Notice model properties
@@ -31,29 +35,36 @@ public class TechnicalOfficerNoticesController {
         loadAllNotices();
     }
 
+    //connect table columns
     private void configureTableColumns() {
         // Beginner-friendly way to link columns to data
+        // Notice ID column
         colNoticeId.setCellValueFactory(data -> {
             return data.getValue().noticeIdProperty();
         });
 
+        // Title column
         colTitle.setCellValueFactory(data -> {
             return data.getValue().titleProperty();
         });
 
+        // Content column
         colContent.setCellValueFactory(data -> {
             return data.getValue().contentProperty();
         });
 
+        // Publish date column
         colPublishDate.setCellValueFactory(data -> {
             return data.getValue().publishDateProperty();
         });
 
+        // Created by column
         colCreatedBy.setCellValueFactory(data -> {
             return data.getValue().createdByProperty();
         });
     }
 
+    methoad of getting notice from db
     private void loadAllNotices() {
         try {
             // Fetch the list from the repository
@@ -67,6 +78,7 @@ public class TechnicalOfficerNoticesController {
         }
     }
 
+    //show error mzg
     private void showErrorMessage(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

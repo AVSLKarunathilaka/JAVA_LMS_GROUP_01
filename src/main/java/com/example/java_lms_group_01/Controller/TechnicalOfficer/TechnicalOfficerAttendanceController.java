@@ -1,5 +1,6 @@
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
+//import necessary classes
 import com.example.java_lms_group_01.Repository.TechnicalOfficerRepository;
 import com.example.java_lms_group_01.model.Attendance;
 import com.example.java_lms_group_01.model.request.AttendanceRequest;
@@ -13,18 +14,23 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+//attendance ui control
 public class TechnicalOfficerAttendanceController {
 
+    //ui components
     @FXML private TextField txtStudentRegNo, txtCourseCode, txtSearch;
     @FXML private DatePicker dpAttendanceDate;
     @FXML private ComboBox<String> cmbSessionType, cmbStatus;
 
+    //table view and columans
     @FXML private TableView<Attendance> tblAttendance;
     @FXML private TableColumn<Attendance, String> colAttendanceId, colStudentRegNo, colCourseCode,
             colDate, colSessionType, colStatus, colTechOfficerReg;
 
+    //repostory object (for db operation)
     private final TechnicalOfficerRepository technicalOfficerRepository = new TechnicalOfficerRepository();
 
+    //intialize method (aoutmatically call when ui load)
     @FXML
     public void initialize() {
         // Setup Dropdown Menus (ComboBoxes)
@@ -58,10 +64,11 @@ public class TechnicalOfficerAttendanceController {
             }
         });
 
-        // 4. Initial load of data
+        // 4. Initial(frist time data) load of data
         loadAttendanceData("");
     }
 
+    //add button action
     @FXML
     private void addRecord(ActionEvent event) {
         // First, check if form is filled correctly
@@ -82,10 +89,13 @@ public class TechnicalOfficerAttendanceController {
         }
     }
 
+    //update button action
     @FXML
     private void updateRecord(ActionEvent event) {
+        //get selected row
         Attendance selected = tblAttendance.getSelectionModel().getSelectedItem();
 
+        //not selected warning
         if (selected == null) {
             showWarning("Please select a record from the table first.");
             return;
@@ -96,6 +106,7 @@ public class TechnicalOfficerAttendanceController {
                 int id = Integer.parseInt(selected.getAttendanceId());
                 AttendanceRequest request = buildRequest();
 
+                //db update
                 technicalOfficerRepository.updateAttendance(id, request);
 
                 loadAttendanceData(txtSearch.getText());
@@ -107,6 +118,7 @@ public class TechnicalOfficerAttendanceController {
         }
     }
 
+    //delete button action
     @FXML
     private void deleteRecord(ActionEvent event) {
         Attendance selected = tblAttendance.getSelectionModel().getSelectedItem();
@@ -129,22 +141,26 @@ public class TechnicalOfficerAttendanceController {
         }
     }
 
+    //clear button action
     @FXML
     private void clearForm(ActionEvent event) {
         clearFormFields();
     }
 
+    //search button action
     @FXML
     private void searchRecords(ActionEvent event) {
         loadAttendanceData(txtSearch.getText());
     }
 
+    //refresh button action
     @FXML
     private void refreshRecords(ActionEvent event) {
         txtSearch.clear();
         loadAttendanceData("");
     }
 
+    //put data to table from db
     private void loadAttendanceData(String keyword) {
         try {
             // Fetch list from repository
@@ -156,6 +172,7 @@ public class TechnicalOfficerAttendanceController {
         }
     }
 
+    //form validation (field check)
     private boolean isFormValid() {
         // Simple check to see if all fields have values
         if (txtStudentRegNo.getText().isBlank() ||
@@ -170,6 +187,7 @@ public class TechnicalOfficerAttendanceController {
         return true;
     }
 
+    //create request object
     private AttendanceRequest buildRequest() {
         // Get current officer's registration
         String officerReg = LoggedInTechnicalOfficer.getRegistrationNo();
@@ -186,6 +204,7 @@ public class TechnicalOfficerAttendanceController {
         );
     }
 
+    //clear form feilds
     private void clearFormFields() {
         txtStudentRegNo.clear();
         txtCourseCode.clear();
@@ -195,16 +214,19 @@ public class TechnicalOfficerAttendanceController {
         tblAttendance.getSelectionModel().clearSelection();
     }
 
+    //display info alert
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.showAndWait();
     }
 
+    //warning alert
     private void showWarning(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message);
         alert.showAndWait();
     }
 
+    //error alert
     private void showError(String message, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message + "\n" + e.getMessage());
         alert.showAndWait();

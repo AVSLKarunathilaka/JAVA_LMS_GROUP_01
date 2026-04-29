@@ -14,16 +14,23 @@ import java.util.List;
 
 public class TechnicalOfficerExamAttendanceController {
 
+    //ui components
     @FXML private TextField txtStudentRegNo, txtCourseCode, txtSearch;
+    //attendance status(p/a)
     @FXML private ComboBox<String> cmbStatus;
+    //date of attendance
     @FXML private DatePicker dpAttendanceDate;
 
+    //main table display records
     @FXML private TableView<ExamAttendance> tblExamAttendance;
+    //tb column
     @FXML private TableColumn<ExamAttendance, String> colExamAttendanceId, colStudentRegNo,
             colCourseCode, colStatus, colAttendanceDate;
 
+    //repository to handle db
     private final TechnicalOfficerRepository technicalOfficerRepository = new TechnicalOfficerRepository();
 
+    //intialize
     @FXML
     public void initialize() {
         // Setup Status Dropdown
@@ -56,6 +63,7 @@ public class TechnicalOfficerExamAttendanceController {
         loadTableData("");
     }
 
+    //add new exam attendance record
     @FXML
     private void addRecord(ActionEvent event) {
         if (isFormValid()) {
@@ -63,7 +71,7 @@ public class TechnicalOfficerExamAttendanceController {
                 ExamAttendanceRequest request = createRequest();
                 technicalOfficerRepository.addExamAttendance(request);
 
-                loadTableData(txtSearch.getText());
+                loadTableData(txtSearch.getText());//refresh tb
                 clearFormFields();
                 showInfo("Exam attendance added!");
             } catch (Exception e) {
@@ -72,6 +80,7 @@ public class TechnicalOfficerExamAttendanceController {
         }
     }
 
+    //update the selected exam attendance
     @FXML
     private void updateRecord(ActionEvent event) {
         ExamAttendance selected = tblExamAttendance.getSelectionModel().getSelectedItem();
@@ -95,6 +104,7 @@ public class TechnicalOfficerExamAttendanceController {
         }
     }
 
+    //delete exam attendance record
     @FXML
     private void deleteRecord(ActionEvent event) {
         ExamAttendance selected = tblExamAttendance.getSelectionModel().getSelectedItem();
@@ -116,22 +126,26 @@ public class TechnicalOfficerExamAttendanceController {
         }
     }
 
+    //search
     @FXML
     private void searchRecords(ActionEvent event) {
         loadTableData(txtSearch.getText());
     }
 
+    //refresh and clear search feild
     @FXML
     private void refreshRecords(ActionEvent event) {
         txtSearch.clear();
         loadTableData("");
     }
 
+    //clear all inputs feilds in the form
     @FXML
     private void clearForm(ActionEvent event) {
         clearFormFields();
     }
 
+    //loads exam attendance data into table view
     private void loadTableData(String keyword) {
         try {
             List<ExamAttendance> list = technicalOfficerRepository.findExamAttendance(keyword);
@@ -141,6 +155,7 @@ public class TechnicalOfficerExamAttendanceController {
         }
     }
 
+    //validation
     private boolean isFormValid() {
         // Simple checks to ensure no fields are empty
         if (txtStudentRegNo.getText().isBlank() ||
@@ -154,6 +169,7 @@ public class TechnicalOfficerExamAttendanceController {
         return true;
     }
 
+    //creates ExamAttendanceRequest object from the form inputs
     private ExamAttendanceRequest createRequest() {
         // Package the data for the database
         return new ExamAttendanceRequest(
@@ -164,6 +180,7 @@ public class TechnicalOfficerExamAttendanceController {
         );
     }
 
+    //clear form
     private void clearFormFields() {
         txtStudentRegNo.clear();
         txtCourseCode.clear();
@@ -172,11 +189,13 @@ public class TechnicalOfficerExamAttendanceController {
         tblExamAttendance.getSelectionModel().clearSelection();
     }
 
+    //info alert
     private void showInfo(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.showAndWait();
     }
 
+    //error mzg
     private void showWarning(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message);
         alert.showAndWait();

@@ -1,3 +1,4 @@
+//time table ui control
 package com.example.java_lms_group_01.Controller.TechnicalOfficer;
 
 import com.example.java_lms_group_01.Repository.TimetableRepository;
@@ -14,15 +15,20 @@ import java.util.List;
 
 public class TechnicalOfficerTimetableController {
 
+    //dropdown(dep)
     @FXML private ComboBox<String> cmbDepartment;
 
+    //timetable
     @FXML private TableView<Timetable> tblTimetables;
 
+    //table column
     @FXML private TableColumn<Timetable, String> colTimetableId, colDepartment, colLecturerId,
             colCourseCode, colAdminId, colDay, colStartTime, colEndTime, colSessionType;
 
+    //access db
     private final TimetableRepository timetableRepository = new TimetableRepository();
 
+    //intialize
     @FXML
     public void initialize() {
         // Step 1: Tell each column which data to pull from the Timetable model
@@ -35,6 +41,7 @@ public class TechnicalOfficerTimetableController {
         refreshTableData(null);
     }
 
+    //method of table column bind
     private void configureColumns() {
         // Standard readable way to link columns to model properties
         colTimetableId.setCellValueFactory(data -> { return data.getValue().timetableIdProperty(); });
@@ -48,6 +55,7 @@ public class TechnicalOfficerTimetableController {
         colSessionType.setCellValueFactory(data -> { return data.getValue().sessionTypeProperty(); });
     }
 
+    //dep filter button
     @FXML
     private void filterByDepartment(ActionEvent event) {
         // Get the selected department from the dropdown
@@ -57,6 +65,7 @@ public class TechnicalOfficerTimetableController {
         refreshTableData(selectedDept);
     }
 
+    //load dep for drop down
     private void loadDepartmentList() {
         try {
             // Get unique departments from the repository
@@ -67,6 +76,7 @@ public class TechnicalOfficerTimetableController {
         }
     }
 
+    //load table data method
     private void refreshTableData(String department) {
         try {
             // Fetch filtered list (using null for lecturer and course filters)
@@ -79,6 +89,7 @@ public class TechnicalOfficerTimetableController {
         }
     }
 
+    //error mzg
     private void showErrorMessage(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
